@@ -44,17 +44,17 @@ def listar_clientes():
     else:
         i = 0
         while i < len(clientes):
-            c = clientes[i]
-            print(str(i + 1) + ". " + c["nombre"] + " - " + c["telefono"] + " - " + c["email"])
+            cliente = clientes[i]
+            print(str(i + 1) + ". " + cliente["nombre"] + " - " + cliente["telefono"] + " - " + cliente["email"])
             i = i + 1
 
 
 def buscar_cliente():
     texto = input("Texto a buscar: ")
     encontrado = False
-    for c in clientes:
-        if texto.lower() in c["nombre"].lower() or texto in c["telefono"] or texto.lower() in c["email"].lower():
-            print(c["nombre"] + " - " + c["telefono"] + " - " + c["email"])
+    for cliente in clientes:
+        if texto.lower() in cliente["nombre"].lower() or texto in cliente["telefono"] or texto.lower() in cliente["email"].lower():
+            print(cliente["nombre"] + " - " + cliente["telefono"] + " - " + cliente["email"])
             encontrado = True
     if encontrado == False:
         print("No se encontraron clientes")
