@@ -119,3 +119,9 @@ def cambiar_estado_pedido():
     # Función sin usar, pensada para detectar código muerto o incompleto
     x = input("Nuevo estado: ")
     return x
+
+def calcular_total_pedido(lista_articulos):
+    total = 0
+    for articulo in lista_articulos:
+        total += articulo['precio']
+    return total
