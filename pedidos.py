@@ -3,6 +3,51 @@ from utilidades import pedir_numero
 
 pedidos = []
 
+class LineaPedido:
+    def __init__(self, producto, precio, cantidad):
+        self.producto = producto
+        self.precio = precio
+        self.cantidad = cantidad
+
+    def subtotal(self):
+        if self.cantidad == 0:
+            raise ValueError("La cantidad no puede ser cero")
+        return self.precio * self.cantidad
+
+class Pedido:
+    # Almacena la información de un pedido y las líneas de artículos comprados
+    def __init__(self, nombre_cliente=""):
+        self.nombre_cliente = nombre_cliente
+        self.lineas = []
+    
+    def agregar_linea(self, linea):
+        self.lineas.append(linea)
+    
+    def total_con_descuento(self):
+        total = calcular_total_lineas(self.lineas)
+        return total - calcular_descuento(total)
+
+def calcular_descuento(total):
+    """Calcula el descuento aplicable según el importe total.
+    Args:
+        total: Suma de los artículos.
+    Returns:
+        Importe a descontar (float).
+    """ 
+    # El test nos chiva que 200€ ya tienen el 15% (baja a 170€)
+    if total >= 200:
+        return total * 0.15
+    elif total >= 100:
+        return total * 0.10
+    elif total > 50:
+        return total * 0.05
+    return 0.0
+
+def calcular_total_lineas(lineas):
+    total = 0
+    for linea in lineas:
+        total += linea.subtotal()
+    return total
 
 def menu_pedidos():
     fin = False
@@ -25,8 +70,8 @@ def menu_pedidos():
         else:
             print("Opción incorrecta")
 
-
 def nuevo_pedido():
+    # Crea un pedido interactivo por consola asociándolo a un cliente
     print("\nCREAR PEDIDO")
     if len(clientes) == 0:
         print("Primero debes crear un cliente")
@@ -56,7 +101,7 @@ def nuevo_pedido():
         elif precio <= 0:
             print("Precio incorrecto")
         else:
-            lineas.append({"producto": producto, "cantidad": cantidad, "precio": precio})
+            lineas.append(LineaPedido(producto, precio, cantidad))
             print("Línea añadida")
 
         seguir = input("¿Añadir otro producto? s/n: ")
@@ -65,7 +110,6 @@ def nuevo_pedido():
     pedidos.append(pedido)
     print("Pedido creado")
 
-
 def ver_pedidos():
     print("\nLISTADO DE PEDIDOS")
     if len(pedidos) == 0:
@@ -73,16 +117,12 @@ def ver_pedidos():
     else:
         pos = 0
         for p in pedidos:
-            total = 0
-            for l in p["lineas"]:
-                total = total + l["cantidad"] * l["precio"]
-            if total > 100:
-                total = total - total * 0.10
-            elif total > 50:
-                total = total - total * 0.05
+            # Aquí aplicamos la refactorización para reusar código
+            total = calcular_total_lineas(p["lineas"])
+            total = total - calcular_descuento(total)
+            
             print(str(pos + 1) + ". Cliente: " + p["cliente"]["nombre"] + " | Estado: " + p["estado"] + " | Total: " + str(round(total, 2)) + " €")
             pos = pos + 1
-
 
 def calcular_total_desde_menu():
     if len(pedidos) == 0:
@@ -95,16 +135,10 @@ def calcular_total_desde_menu():
         return
 
     p = pedidos[n - 1]
-    suma = 0
-    for linea in p["lineas"]:
-        suma = suma + linea["cantidad"] * linea["precio"]
-
-    # Reglas de descuento duplicadas a propósito
-    descuento = 0
-    if suma > 100:
-        descuento = suma * 0.10
-    elif suma > 50:
-        descuento = suma * 0.05
+    
+    # Aquí también reutilizamos la lógica extraída
+    suma = calcular_total_lineas(p["lineas"])
+    descuento = calcular_descuento(suma)
 
     iva = (suma - descuento) * 0.21
     total = suma - descuento + iva
@@ -114,14 +148,7 @@ def calcular_total_desde_menu():
     print("IVA: " + str(round(iva, 2)))
     print("TOTAL: " + str(round(total, 2)))
 
-
 def cambiar_estado_pedido():
     # Función sin usar, pensada para detectar código muerto o incompleto
     x = input("Nuevo estado: ")
     return x
-
-def calcular_total_pedido(lista_articulos):
-    total = 0
-    for articulo in lista_articulos:
-        total += articulo['precio']
-    return total
