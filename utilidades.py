@@ -15,3 +15,5 @@ def pedir_numero(mensaje):
 
 def formatear_moneda(x):
     return str(round(x, 2)) + " €"
+
+# Mejora de la lógica de descuentos aplicada en esta rama
